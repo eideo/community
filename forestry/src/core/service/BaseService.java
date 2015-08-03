@@ -7,7 +7,8 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import base.dao.BaseDao;
+import commnuity.base.dao.BaseDao;
+
 import core.support.BaseParameter;
 import core.support.QueryResult;
 

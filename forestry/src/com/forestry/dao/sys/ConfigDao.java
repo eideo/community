@@ -1,8 +1,7 @@
 package com.forestry.dao.sys;
 
-import base.dao.BaseDao;
-
 import com.forestry.model.sys.Config;
+import commnuity.base.dao.BaseDao;
 
 /**
  * @author Yang Tian

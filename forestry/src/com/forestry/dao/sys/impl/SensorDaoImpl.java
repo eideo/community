@@ -6,10 +6,9 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
-import base.dao.BaseDaoImpl;
-
 import com.forestry.dao.sys.SensorDao;
 import com.forestry.model.sys.Sensor;
+import commnuity.base.dao.BaseDaoImpl;
 
 import core.support.QueryResult;
 

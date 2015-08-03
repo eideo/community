@@ -5,10 +5,9 @@ import java.util.List;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
-import base.dao.BaseDaoImpl;
-
 import com.forestry.dao.sys.SensorDataDao;
 import com.forestry.model.sys.SensorData;
+import commnuity.base.dao.BaseDaoImpl;
 
 /**
  * @author Yang Tian

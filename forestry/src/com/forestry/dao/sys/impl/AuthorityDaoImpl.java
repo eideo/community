@@ -5,10 +5,9 @@ import java.util.List;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
-import base.dao.BaseDaoImpl;
-
 import com.forestry.dao.sys.AuthorityDao;
 import com.forestry.model.sys.Authority;
+import commnuity.base.dao.BaseDaoImpl;
 
 /**
  * @author Yang Tian

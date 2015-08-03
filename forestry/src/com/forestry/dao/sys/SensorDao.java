@@ -2,9 +2,8 @@ package com.forestry.dao.sys;
 
 import java.util.List;
 
-import base.dao.BaseDao;
-
 import com.forestry.model.sys.Sensor;
+import commnuity.base.dao.BaseDao;
 
 import core.support.QueryResult;
 

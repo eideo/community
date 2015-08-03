@@ -2,10 +2,9 @@ package com.forestry.dao.sys.impl;
 
 import org.springframework.stereotype.Repository;
 
-import base.dao.BaseDaoImpl;
-
 import com.forestry.dao.sys.SensorLastDataDao;
 import com.forestry.model.sys.SensorLastData;
+import commnuity.base.dao.BaseDaoImpl;
 
 /**
  * @author Yang Tian
