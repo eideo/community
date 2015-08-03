@@ -2,15 +2,15 @@ package com.forestry.dao.sys;
 
 import java.util.List;
 
-import com.forestry.model.sys.SensorData;
+import base.dao.BaseDao;
 
-import core.dao.Dao;
+import com.forestry.model.sys.SensorData;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
-public interface SensorDataDao extends Dao<SensorData> {
+public interface SensorDataDao extends BaseDao<SensorData> {
 
 	List<Object[]> doGetSensorDataStatistics(Short sensorType);
 

@@ -5,17 +5,17 @@ import java.util.List;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
+import base.dao.BaseDaoImpl;
+
 import com.forestry.dao.sys.AuthorityDao;
 import com.forestry.model.sys.Authority;
-
-import core.dao.BaseDao;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
 @Repository
-public class AuthorityDaoImpl extends BaseDao<Authority> implements AuthorityDao {
+public class AuthorityDaoImpl extends BaseDaoImpl<Authority> implements AuthorityDao {
 
 	public AuthorityDaoImpl() {
 		super(Authority.class);

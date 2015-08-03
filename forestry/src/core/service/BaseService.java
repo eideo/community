@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import core.dao.Dao;
+import base.dao.BaseDao;
 import core.support.BaseParameter;
 import core.support.QueryResult;
 
@@ -18,7 +18,7 @@ import core.support.QueryResult;
 @Transactional
 public class BaseService<E> implements Service<E> {
 
-	protected Dao<E> dao;
+	protected BaseDao<E> dao;
 
 	public void persist(E entity) {
 		dao.persist(entity);

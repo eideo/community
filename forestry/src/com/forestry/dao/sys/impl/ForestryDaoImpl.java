@@ -5,17 +5,17 @@ import java.util.List;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
+import base.dao.BaseDaoImpl;
+
 import com.forestry.dao.sys.ForestryDao;
 import com.forestry.model.sys.Forestry;
-
-import core.dao.BaseDao;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
 @Repository
-public class ForestryDaoImpl extends BaseDao<Forestry> implements ForestryDao {
+public class ForestryDaoImpl extends BaseDaoImpl<Forestry> implements ForestryDao {
 
 	public ForestryDaoImpl() {
 		super(Forestry.class);

@@ -1,13 +1,13 @@
 package com.forestry.dao.sys;
 
-import com.forestry.model.sys.ForestryType;
+import base.dao.BaseDao;
 
-import core.dao.Dao;
+import com.forestry.model.sys.ForestryType;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
-public interface ForestryTypeDao extends Dao<ForestryType> {
+public interface ForestryTypeDao extends BaseDao<ForestryType> {
 
 }

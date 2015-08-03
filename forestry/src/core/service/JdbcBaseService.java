@@ -4,7 +4,7 @@ import javax.annotation.Resource;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import core.dao.JdbcBaseDao;
+import base.dao.JdbcBaseDao;
 
 /**
  * @author Yang Tian

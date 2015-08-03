@@ -5,17 +5,17 @@ import java.util.List;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
+import base.dao.BaseDaoImpl;
+
 import com.forestry.dao.sys.SensorDataDao;
 import com.forestry.model.sys.SensorData;
-
-import core.dao.BaseDao;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
 @Repository
-public class SensorDataDaoImpl extends BaseDao<SensorData> implements SensorDataDao {
+public class SensorDataDaoImpl extends BaseDaoImpl<SensorData> implements SensorDataDao {
 
 	public SensorDataDaoImpl() {
 		super(SensorData.class);

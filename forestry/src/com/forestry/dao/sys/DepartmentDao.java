@@ -1,13 +1,13 @@
 package com.forestry.dao.sys;
 
-import com.forestry.model.sys.Department;
+import base.dao.BaseDao;
 
-import core.dao.Dao;
+import com.forestry.model.sys.Department;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
-public interface DepartmentDao extends Dao<Department> {
+public interface DepartmentDao extends BaseDao<Department> {
 
 }

@@ -6,10 +6,11 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
+import base.dao.BaseDaoImpl;
+
 import com.forestry.dao.sys.SensorDao;
 import com.forestry.model.sys.Sensor;
 
-import core.dao.BaseDao;
 import core.support.QueryResult;
 
 /**
@@ -17,7 +18,7 @@ import core.support.QueryResult;
  * @email 1298588579@qq.com
  */
 @Repository
-public class SensorDaoImpl extends BaseDao<Sensor> implements SensorDao {
+public class SensorDaoImpl extends BaseDaoImpl<Sensor> implements SensorDao {
 
 	public SensorDaoImpl() {
 		super(Sensor.class);

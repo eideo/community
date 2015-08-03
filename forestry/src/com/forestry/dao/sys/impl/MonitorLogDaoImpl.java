@@ -5,17 +5,17 @@ import java.util.List;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
+import base.dao.BaseDaoImpl;
+
 import com.forestry.dao.sys.MonitorLogDao;
 import com.forestry.model.sys.MonitorLog;
-
-import core.dao.BaseDao;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
 @Repository
-public class MonitorLogDaoImpl extends BaseDao<MonitorLog> implements MonitorLogDao {
+public class MonitorLogDaoImpl extends BaseDaoImpl<MonitorLog> implements MonitorLogDao {
 
 	public MonitorLogDaoImpl() {
 		super(MonitorLog.class);

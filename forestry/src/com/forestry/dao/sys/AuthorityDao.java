@@ -2,15 +2,15 @@ package com.forestry.dao.sys;
 
 import java.util.List;
 
-import com.forestry.model.sys.Authority;
+import base.dao.BaseDao;
 
-import core.dao.Dao;
+import com.forestry.model.sys.Authority;
 
 /**
  * @author Yang Tian
  * @email 1298588579@qq.com
  */
-public interface AuthorityDao extends Dao<Authority> {
+public interface AuthorityDao extends BaseDao<Authority> {
 
 	List<Authority> queryByParentIdAndRole(Short role);
 

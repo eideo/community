@@ -8,11 +8,12 @@
 				http://www.springframework.org/schema/tx classpath:/org/springframework/transaction/config/spring-tx-3.2.xsd">
 
 	<context:annotation-config />
+	
 	<context:component-scan base-package="com.forestry" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/forestry?useUnicode=true&amp;characterEncoding=utf-8" />
+		<property name="jdbcUrl" value="jdbc:mysql://121.40.61.204:3306/forestry?useUnicode=true&amp;characterEncoding=utf-8" />
 		<property name="user" value="root" />
 		<property name="password" value="root!2#" />
 		<!-- 
