@@ -1,0 +1,18 @@
+
+.head {
+    height: 80px;
+}
+
+.west {
+    width: 180px;
+}
+
+.fcontent {
+    padding:5px;
+    background:#fff;
+}
+
+/**/
+.icon_tree_menu_p{
+	background:url('images/box_32x32.png') no-repeat center center;
+}
