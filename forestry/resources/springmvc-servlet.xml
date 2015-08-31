@@ -13,10 +13,13 @@
 
 	<mvc:annotation-driven/>
 	
+	<!-- URL被当做静态资源，由Spring读出到内存中再响应http -->
 	<mvc:resources location="/static/" mapping="/static/**"/>
 	
+	<!-- 涉嫌与applicationConetext中重复扫描 -->
 	<context:component-scan base-package="com.forestry.controller" />
 	
+	<!-- 由于annotation-driven 此bean的注册显得可有可无-->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 	
 	<!-- 
@@ -49,6 +52,7 @@
 		<property name="suffix"><value>.jsp</value></property>
 	</bean>
 	
+	<!-- 资源信息国际化支持??? -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="messages" />
 		<property name="useCodeAsDefaultMessage" value="true" />
