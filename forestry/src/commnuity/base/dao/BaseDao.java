@@ -19,7 +19,6 @@ import core.support.QueryResult;
  * @ModifyDescription:
  * @Version:   V1.0
  */
-
 public interface BaseDao<E> {
 	/**
 	 * @Title: persist
@@ -142,8 +141,8 @@ public interface BaseDao<E> {
 	/**
 	 * @Title: get方式加载对象
 	 * @Description: hibernate会确认一下该id对应的数据是否存在,首先在session缓存中查找,
-	 * 					然后在二级缓存中查找,还没有就查询数据库，数据库中没有就返回null.
-	 * 					-不支持LAZY
+	 * 			然后在二级缓存中查找,还没有就查询数据库，数据库中没有就返回null.
+	 * 			-不支持LAZY
 	 * @param id
 	 * @return
 	 * @throws: null
@@ -153,11 +152,11 @@ public interface BaseDao<E> {
 	/**
 	 * @Title: load
 	 * @Description: 根据映射文件上类级别的lazy属性的配置(默认为true)
-	 * 					若为true,则首先在Session缓存中查找，看看该id对应的对象 是否 存在,
-	 * 					不存在则使用延迟加载，返回实体的代理类对象(该代理类为实体类的子类，由CGLIB动态生成)
-	 * 					等到具体使用该对象(除获取OID以外)的时候， 再查询二级缓存和数据库.若仍没发现抛出异常
-	 * 					load方法可返回没有加载实体数据的代理类实例
-	 * 					支持LAZY
+	 * 			若为true,则首先在Session缓存中查找，看看该id对应的对象 是否 存在,
+	 * 			不存在则使用延迟加载，返回实体的代理类对象(该代理类为实体类的子类，由CGLIB动态生成)
+	 * 			等到具体使用该对象(除获取OID以外)的时候， 再查询二级缓存和数据库.若仍没发现抛出异常
+	 * 			load方法可返回没有加载实体数据的代理类实例
+	 * 			支持LAZY
 	 * @param id 可序列化的id
 	 * @return
 	 * @throws: ObjectNotFoundException
@@ -207,35 +206,107 @@ public interface BaseDao<E> {
 	public E getByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
 
 	/**
-	 * query by property
-	 * 
-	 * @param propName
-	 * @param propValue
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param sortedCondition Map 排序条件与规则
+	 * @param top 从第1条向后取多少
 	 * @return
+	 * @throws: TODO
 	 */
 	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition, Integer top);
-
+	
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param sortedCondition Map 排序条件与规则
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition);
-
+	
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param top 从第1条向后取多少
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String[] propName, Object[] propValue, Integer top);
 
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String[] propName, Object[] propValue);
-
+	
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param sortedCondition Map 排序条件与规则
+	 * @param top 从第1条向后取多少
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition, Integer top);
 
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param sortedCondition Map 排序条件与规则
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
-
+	
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @param top 从第1条向后取多少
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String propName, Object propValue, Integer top);
 
+	/**
+	 * @Title: queryByProerties
+	 * @Description: 根据属性条件参数查询一个对象集合
+	 * @param propName 属性条件名
+	 * @param propValue 属性条件值
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> queryByProerties(String propName, Object propValue);
 
 	/**
-	 * Completely clear the session.
+	 * @Title: clear
+	 * @Description: 清除session对象
+	 * @throws: TODO
 	 */
 	public void clear();
 
 	/**
-	 * Remove this instance from the session cache.
+	 * @Title: evict
+	 * @Description: Remove this instance from the session cache
+	 * 			将对象从session中逐出，即session的EntityEntries属性中逐出 
+	 * 			详细参考:http://langhua9527.iteye.com/blog/343311
+	 * @param entity
+	 * @throws: TODO
 	 */
 	public void evict(E entity);
 

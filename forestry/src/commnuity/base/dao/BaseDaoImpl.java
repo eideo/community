@@ -28,10 +28,6 @@ import org.hibernate.criterion.Restrictions;
 import core.support.BaseParameter;
 import core.support.QueryResult;
 
-/**
- * @author Yang Tian
- * @email 1298588579@qq.com
- */
 public class BaseDaoImpl<E> implements BaseDao<E> {
 
 	protected final Logger log = Logger.getLogger(BaseDaoImpl.class);
