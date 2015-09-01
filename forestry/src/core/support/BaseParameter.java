@@ -10,7 +10,6 @@ import java.util.Map;
  * @email 1298588579@qq.com
  */
 public class BaseParameter implements Serializable {
-	
 	private static final long serialVersionUID = -2050801753454734869L;
 
 	public static final String SORTED_ASC = "ASC";

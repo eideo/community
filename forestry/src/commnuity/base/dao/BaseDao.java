@@ -12,6 +12,9 @@ import core.support.QueryResult;
  *
  * @Description: 泛型基础操作.
  * 				This file Charset is GBK 
+ * 				实现类依赖 org.apache.commons.beanutils.BeanUtils
+ * 					   core.support.BaseParameter
+ * 					   core.support.QueryResult
  * @Author: lazite 
  * @CreateTime: 2015年8月31日 下午7:55:37   
  * @ModifyBy: lazite 
@@ -311,23 +314,41 @@ public interface BaseDao<E> {
 	public void evict(E entity);
 
 	/**
-	 * count all
-	 * 
+	 * @Title: countAll
+	 * @Description: 统计所有非对象重复个数(重复依据对象equals而定)
 	 * @return
+	 * @throws: TODO
 	 */
 	public Long countAll();
 
 	/**
-	 * Query all
-	 * 
+	 * @Title: doQueryAll
+	 * @Description: Criteria方式查询所有
 	 * @return
+	 * @throws: TODO
 	 */
 	public List<E> doQueryAll();
-
+	
+	/**
+	 * @Title: doQueryAll
+	 * @Description: Criteria方式查询
+	 * @param sortedCondition 排序条件
+	 * @param top 从第一条开始后的top条数据
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> doQueryAll(Map<String, String> sortedCondition, Integer top);
-
+	
+	/**
+	 * @Title: doQueryAll
+	 * @Description: Criteria方式查询默认排序
+	 * @param top 从第一条开始后的top条数据
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> doQueryAll(Integer top);
-
+	
+	
 	public Long doCount(BaseParameter parameter);
 
 	public List<E> doQuery(BaseParameter parameter);
