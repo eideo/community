@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.forestry.dao.sys.ForestryDao;
 import com.forestry.model.sys.Forestry;
-import commnuity.base.dao.BaseDaoImpl;
+
+import community.base.dao.BaseDaoImpl;
 
 /**
  * @author Yang Tian

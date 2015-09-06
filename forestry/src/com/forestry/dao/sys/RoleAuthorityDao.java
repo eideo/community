@@ -1,7 +1,8 @@
 package com.forestry.dao.sys;
 
 import com.forestry.model.sys.RoleAuthority;
-import commnuity.base.dao.BaseDao;
+
+import community.base.dao.BaseDao;
 
 /**
  * @author Yang Tian

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.forestry.dao.sys.SensorDao;
 import com.forestry.model.sys.Sensor;
-import commnuity.base.dao.BaseDaoImpl;
 
+import community.base.dao.BaseDaoImpl;
 import core.support.QueryResult;
 
 /**

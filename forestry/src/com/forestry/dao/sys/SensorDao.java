@@ -3,8 +3,8 @@ package com.forestry.dao.sys;
 import java.util.List;
 
 import com.forestry.model.sys.Sensor;
-import commnuity.base.dao.BaseDao;
 
+import community.base.dao.BaseDao;
 import core.support.QueryResult;
 
 /**

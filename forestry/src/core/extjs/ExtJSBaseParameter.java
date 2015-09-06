@@ -7,7 +7,7 @@ import core.support.BaseParameter;
  * @email 1298588579@qq.com
  */
 public class ExtJSBaseParameter extends BaseParameter {
-
+	
 	private static final long serialVersionUID = -6478237711699437927L;
 	private Boolean success;
 	private String message;
