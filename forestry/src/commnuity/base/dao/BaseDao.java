@@ -348,13 +348,43 @@ public interface BaseDao<E> {
 	 */
 	public List<E> doQueryAll(Integer top);
 	
-	
+	/**
+	 * @Title: doCount
+	 * @Description: criteria查询符合条件的对象个数
+	 * @param parameter
+	 * @return
+	 * @throws: TODO
+	 */
 	public Long doCount(BaseParameter parameter);
-
+	
+	/**
+	 * @Title: doQuery
+	 * @Description: criteria查询符合条件的对象集合
+	 * @param parameter
+	 * @return
+	 * @throws: TODO
+	 */
 	public List<E> doQuery(BaseParameter parameter);
-
+	
+	/**
+	 * @Title: doPaginationQuery
+	 * @Description: criteria分页查询符合条件的对象集合.
+	 * 				结果集封装为QueryResult<E>
+	 * @param parameter
+	 * @return
+	 * @throws: TODO
+	 */
 	public QueryResult<E> doPaginationQuery(BaseParameter parameter);
-
+	
+	/**
+	 * @Title: doPaginationQuery
+	 * @Description: criteria分页查询符合条件的对象集合.
+	 * 				结果集封装为QueryResult<E>
+	 * @param parameter
+	 * @param bool 暂未明白何种含义???????????
+	 * @return
+	 * @throws: TODO
+	 */
 	public QueryResult<E> doPaginationQuery(BaseParameter parameter, boolean bool);
 
 }
