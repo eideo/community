@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hadoop.secrity.mapping.MenuMapper" >
+  <resultMap id="MenuMap" type="com.hadoop.secrity.entity.Menu" >
+    <id column="m_id" property="id" jdbcType="INTEGER" />
+    <result column="m_pid" property="pid" jdbcType="INTEGER" />
+    <result column="m_name" property="name" jdbcType="VARCHAR" />
+    <result column="m_url" property="url" jdbcType="VARCHAR" />
+    <result column="m_place" property="place" jdbcType="INTEGER" />
+    <result column="m_addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="m_edittime" property="editime" jdbcType="TIMESTAMP" />
+    <result column="m_remark" property="remark" jdbcType="VARCHAR" />
+    <result column="m_isdisplay" property="isdisplay" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="CpMenuMap" type="com.hadoop.secrity.entity.Menu" extends="MenuMap">
+  	<collection property="clist" ofType="java.util.List" 
+  		select="com.hadoop.secrity.mapping.MenuMapper.selectChildMenu" column="m_id"/>
+  </resultMap>
+  
+  <resultMap id="MenuPrivMap" type="com.hadoop.secrity.entity.Menu" extends="MenuMap">
+  	<collection property="list" ofType="com.hadoop.secrity.entity.Privilege">
+  		<id column="p_id" property="id" jdbcType="INTEGER" />
+	    <result column="p_name" property="name" jdbcType="VARCHAR" />
+	    <result column="p_desc" property="desc" jdbcType="INTEGER" />
+	    <result column="t_m_id" property="mid" jdbcType="INTEGER" />
+	    <result column="p_style" property="style" jdbcType="INTEGER"/>
+  	</collection>
+  </resultMap>
+    
+  <sql id="Base_Column_Menu" >
+    m_id, m_pid, m_name, m_url, m_place, m_addtime, m_edittime, m_remark, m_isdisplay
+  </sql>
+  
+  <!-- 插入Menu -->
+  <insert id="addMenu" useGeneratedKeys="true" keyProperty="id" 
+  		parameterType="com.hadoop.secrity.entity.Menu" >
+    insert into t_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        m_pid,
+      </if>
+      <if test="name != null" >
+        m_name,
+      </if>
+      <if test="url != null" >
+        m_url,
+      </if>
+      <if test="place != null" >
+        m_place,
+      </if>
+      <if test="addtime != null" >
+        m_addtime,
+      </if>
+      <if test="editime != null" >
+        m_edittime,
+      </if>
+      <if test="remark != null" >
+        m_remark,
+      </if>
+      <if test="isdisplay != null" >
+        m_isdisplay,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null" >
+        #{place,jdbcType=INTEGER},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editime != null" >
+        #{editime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isdisplay != null" >
+        #{isdisplay,jdbcType=INTEGER}
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 根据一个id删除一个栏目 -->
+  <delete id="delMenuById" parameterType="Integer">
+  		delete from t_menu
+	where m_id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 更新一个栏目的基本信息,不包括id -->
+  <update id="updateMenu" parameterType="com.hadoop.secrity.entity.Menu">
+  	update t_menu
+  	<set>
+  		<if test="pid != null">m_pid = #{pid}</if>
+  		<if test="name != null">m_name = #{name}</if>
+  		<if test="url != null">m_url = #{url}</if>
+  		<if test="place != null">m_place = #{place}</if>
+  		<if test="addtime != null">m_addtime = #{addtime}</if>
+  		<if test="editime != null">m_edittime = #{editime}</if>
+  		<if test="remark != null">m_remark = #{remark}</if>
+  		<if test="isdisplay != null">m_isdisplay = #{isdisplay}</if>
+  	</set>
+  	where m_id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据一个id查找一个栏目信息 -->
+  <select id="selectMenuById"  parameterType="java.lang.Integer" resultMap="MenuMap">
+  	select 
+    <include refid="Base_Column_Menu" />
+    from t_menu
+    where m_id = #{mId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据一个id查找一个栏目信息 -->
+  <select id="selectChildMenu"  parameterType="java.lang.Integer" resultMap="MenuMap">
+  	SELECT 
+    <include refid="Base_Column_Menu" />
+    FROM t_menu
+    WHERE m_pid = #{mId,jdbcType=INTEGER}
+    ORDER BY m_id
+  </select>
+  
+  <!-- 根据一个id查找一个栏目信息 -->
+  <select id="selectAllPChildMenu"  parameterType="java.util.List" resultMap="CpMenuMap">
+  	SELECT 
+    <include refid="Base_Column_Menu" />
+    FROM t_menu
+    WHERE m_pid=2 and m_id in
+    <foreach collection="list" item="item" index="index" open="(" close=")" separator="," >
+  		#{item,jdbcType=INTEGER}
+	</foreach>
+    ORDER BY m_id
+  </select>
+  
+  
+  <!-- 通过menu的名字查找栏目对象 -->
+  <select id="selectMenuByName" resultMap="MenuMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_Menu" />
+    from t_menu
+    where m_name = #{name,jdbcType=VARCHAR}
+  </select>
+</mapper>

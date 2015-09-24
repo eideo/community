@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hadoop.secrity.mapping.UserMapper" >
+
+  <resultMap id="UserMap" type="com.hadoop.secrity.entity.User" >
+    <id column="u_id" property="id" jdbcType="INTEGER" />
+    <result column="account" property="account" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="gender" property="gender" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="UserRoleMap" type="com.hadoop.secrity.entity.User"  extends="UserMap">
+  	<collection property="list" ofType="com.hadoop.secrity.entity.Role">
+  		<id column="r_id" property="id" jdbcType="INTEGER" />
+	    <result column="r_name" property="name" jdbcType="VARCHAR" />
+	    <result column="r_addtime" property="addtime" jdbcType="TIMESTAMP" />
+	    <result column="r_edittime" property="editime" jdbcType="TIMESTAMP" />
+	    <result column="r_remark" property="remark" jdbcType="VARCHAR" />
+  	</collection>
+  </resultMap>
+  
+  <resultMap type="com.hadoop.secrity.entity.UserRoleLink" id="userRoleLinksByIdMap">
+  	<result column="t_u_id" property="user.id" jdbcType="INTEGER"/>
+  	<result column="t_r_id" property="role.id" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_User">
+    u_id, account, password, state, login_time, name, gender, age, phone
+  </sql>
+  <sql id="Base_Column_Role">
+    r_id, r_name, r_addtime, r_edittime, r_remark
+  </sql>
+  
+  <!-- 根据主键load出User对象  lazite-->
+  <select id="selectUserById" resultMap="UserMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_User" /> 
+    from t_user u 
+    where u_id = #{uId,jdbcType=INTEGER}
+  </select>
+  
+   <!-- 根据主键load出User对象  所有列名 lazite-->
+  <select id="selectUserAllById" resultMap="UserMap" parameterType="java.lang.Integer" >
+    select 
+    (account,password,state,login_time,name,age,gender,phone) 
+    from t_user u 
+    where u_id = #{uId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据主键load出User对象,包含Role集合 lazite -->
+  <select id="selectUserRolesById" resultMap="UserRoleMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_User" />
+     ,
+    <include refid="Base_Column_Role" />
+    from t_user u
+    left join t_user_role ur on u.u_id=ur.t_u_id 
+    left join t_role r on ur.t_r_id=r.r_id 
+    where u_id = #{uId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectUserByAccount" resultMap="UserMap" parameterType="com.hadoop.secrity.entity.User" >
+	 select 
+     <include refid="Base_Column_User" /> 
+    from t_user u 
+     <where>  
+        <if test="account != null">
+            account=#{account}  
+        </if>  
+        <if test="password != null">  
+            and password = #{password} 
+        </if> 		
+            and state !=0
+     </where>
+  </select> 
+  
+   <!-- 分页条件查询 lazite -->
+  <select id="selectUsersByConditon4Pages" resultMap="UserMap" parameterType="com.hadoop.secrity.entity.User" >
+    select 
+     <include refid="Base_Column_User" /> 
+    from t_user u 
+     <where>  
+        <if test="account != null">
+            account LIKE CONCAT('%',#{account},'%')    
+        </if>  
+		<!--<if test="state != null">  
+            and state =#{state} 
+        </if> -->
+        <if test="phone != null">  
+            and phone LIKE CONCAT('%',#{phone},'%') 
+        </if>
+        <!-- <if test="password != null">  
+            and password = #{password} 
+        </if> -->
+        <if test="loginTime!=null and loginTime!=''">
+	    	<![CDATA[  
+	    		and DATE_FORMAT(login_time, '%Y-%m-%d') <= DATE_FORMAT(#{loginTime}, '%Y-%m-%d')
+	    	]]>
+	    </if> 
+     </where>
+      order by u_id desc
+  </select>
+  
+  <!--添加user  created by zhoujinwei -->
+  <!-- id是设定此语句的唯一标示(不可重复),parameterType是其参数类型,useGeneratedKeys -->
+  <insert id="addUser" parameterType="com.hadoop.secrity.entity.User" useGeneratedKeys="true" keyColumn="u_id" keyProperty="id">
+  	insert into t_user(u_id, account, password, state, login_time,name,age,gender,phone)
+  	values(#{id},#{account},#{password},#{state},#{loginTime},#{name},#{age},#{gender},#{phone})
+  </insert>
+  <!-- 保存用户与角色之间的关联 lazite -->
+  <!-- insert into t_user_role (t_u_id,t_r_id) values (user.id,role.id) -->
+  <insert id="addUserRole" parameterType="com.hadoop.secrity.entity.UserRoleLink">
+  	insert into t_user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="user.id != null" >
+        t_u_id,
+      </if>
+      <if test="role.id != null" >
+        t_r_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="user.id != null" >
+        #{user.id,jdbcType=INTEGER},
+      </if>
+      <if test="role.id != null" >
+         #{role.id,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 批量保存用户与角色之间的关联  lazite-->
+  <insert id="addUsersRolesBatch" parameterType="java.util.List">
+  	insert into t_user_role (t_u_id,t_r_id)  
+  	values
+    <foreach collection="list" item="item" index="index" separator="," >
+  		(#{item.user.id,jdbcType=INTEGER},#{item.role.id,jdbcType=INTEGER})
+	</foreach>
+  </insert>
+
+  <!-- 根据id删除user  	created by zhoujinwei-->
+  <delete id="delUserById" parameterType="Integer">
+  	delete from t_user where u_id = #{id}
+  </delete>
+  
+  <!-- 根据user对象的id删除该user与所有角色之间的关联关系 lazite -->
+  <delete id="delUserRoles" parameterType="Integer">
+  	delete from t_user_role
+    where t_u_id=#{id} 
+  </delete>
+  <!-- 根据user对象的id批量删除该user与角色之间的关联关系 lazite -->
+  <delete id="delUserRolesBatch">
+  	delete from t_user_role
+    where 1=1
+    <if test="rIdArray==null or rIdArray.length==0"> 
+    	and 1=2 
+    </if>
+    <if test="rIdArray!=null and rIdArray.length!=0">
+	    and t_u_id=#{uId}
+        and t_r_id in
+        <foreach collection="rIdArray" item="rId" index="index" open="(" close=")" separator=",">
+            #{rId}
+        </foreach>
+    </if> 
+  </delete>
+  <!-- 修改用户对象的信息 	created by zhoujinwei-->
+  <update id="updateUser" parameterType="com.hadoop.secrity.entity.User" >
+  	update t_user
+  	<set>
+  		<if test="account != null">
+  			account = #{account},	
+  		</if>
+  		<if test="password != null">
+  			password = #{password},	
+  		</if>
+  		<if test="name != null">
+  			name = #{name},	
+  		</if>
+  		<if test="age != null">
+  			age = #{age},	
+  		</if>
+  		<if test="gender != null">
+  			gender = #{gender},	
+  		</if>
+  		<if test="phone != null">
+  			phone = #{phone}
+  		</if>
+  	</set>
+  	where u_id = #{id}
+  </update>
+  <!-- 根据用户id查询用户都具有什么角色 -->
+   <select id="selectUserRoleLinksById" parameterType="com.hadoop.secrity.entity.User" resultMap="userRoleLinksByIdMap">
+      select t_u_id,t_r_id from t_user_role where t_u_id=#{id}
+   </select>
+</mapper>
+
+

@@ -8,32 +8,32 @@ import core.support.BaseParameter;
 import core.support.QueryResult;
 
 /**
- * @CopyRight��http://www.netrust.cn/
+ * @CopyRight锟斤拷http://www.netrust.cn/
  *
- * @Description: ���ͻ����.
+ * @Description: 锟斤拷锟酵伙拷锟斤拷锟�
  * 				This file Charset is GBK 
- * 				ʵ�������� org.apache.commons.beanutils.BeanUtils
+ * 				实锟斤拷锟斤拷锟斤拷锟斤拷 org.apache.commons.beanutils.BeanUtils
  * 					   core.support.BaseParameter
  * 					   core.support.QueryResult
  * @Author: lazite 
- * @CreateTime: 2015��8��31�� ����7:55:37   
+ * @CreateTime: 2015锟斤拷8锟斤拷31锟斤拷 锟斤拷锟斤拷7:55:37   
  * @ModifyBy: lazite 
- * @ModeifyTime: 2015��8��31�� ����7:55:37   
+ * @ModeifyTime: 2015锟斤拷8锟斤拷31锟斤拷 锟斤拷锟斤拷7:55:37   
  * @ModifyDescription:
  * @Version:   V1.0
  */
-public interface BaseDao<E> {
+public interface BaseDao<T> {
 	/**
 	 * @Title: persist
-	 * @Description: ����/���ʵ��
+	 * @Description: 锟斤拷锟斤拷/锟斤拷锟绞碉拷锟�
 	 * @param entity
 	 * @throws: TODO
 	 */
-	public void persist(E entity);
+	public void persist(T entity);
 
 	/**
 	 * @Title: deleteByPK
-	 * @Description: �������idɾ��ʵ����(������ɾ��)
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟絠d删锟斤拷实锟斤拷锟斤拷(锟斤拷锟斤拷锟斤拷删锟斤拷)
 	 * @param id
 	 * @return
 	 * @throws: TODO
@@ -42,46 +42,46 @@ public interface BaseDao<E> {
 
 	/**
 	 * @Title: delete
-	 * @Description: ɾ��һ��ָ������ʵ��(������ϵ�Ƿ�ɾ���Ӻ�ʵ��ӳ��)
+	 * @Description: 删锟斤拷一锟斤拷指锟斤拷锟斤拷锟斤拷实锟斤拷(锟斤拷锟斤拷锟斤拷系锟角凤拷删锟斤拷锟接猴拷实锟斤拷映锟斤拷)
 	 * @param entity
 	 * @throws: TODO
 	 */
-	public void delete(E entity);
+	public void delete(T entity);
 
 	/**
 	 * @Title: deleteByProperties
-	 * @Description: ͨ��HQL���ִ������ɾ�����
-	 * @param propName ʵ��������
-	 * @param propValue ʵ������ֵ
+	 * @Description: 通锟斤拷HQL锟斤拷锟街达拷锟斤拷锟斤拷锟缴撅拷锟斤拷锟斤拷
+	 * @param propName 实锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 实锟斤拷锟斤拷锟斤拷值
 	 * @throws: TODO
 	 */
 	public void deleteByProperties(String propName, Object propValue);
 
 	/**
 	 * @Title: deleteByProperties
-	 * @Description: ͨ��HQL���ִ������ɾ�����(������)
-	 * @param propName ʵ��������
-	 * @param propValue ʵ������ֵ
+	 * @Description: 通锟斤拷HQL锟斤拷锟街达拷锟斤拷锟斤拷锟缴撅拷锟斤拷锟斤拷(锟斤拷锟斤拷锟斤拷)
+	 * @param propName 实锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 实锟斤拷锟斤拷锟斤拷值
 	 * @throws: TODO
 	 */
 	public void deleteByProperties(String[] propName, Object[] propValue);
 
 	/**
 	 * @Title: update
-	 * @Description: �޸�ʵ�����.�ö�����Ϊ�Ѽ���״̬
+	 * @Description: 锟睫革拷实锟斤拷锟斤拷锟�锟矫讹拷锟斤拷锟斤拷为锟窖硷拷锟斤拷状态
 	 * @param entity
 	 * @throws: TODO
 	 */
-	public void update(E entity);
+	public void update(T entity);
 
 	/**
 	 * @Title: updateByProperties
 	 * @Description: TODO
 	 * @Simple  update T set conditionName1=conditionValue1 where 1=1 and propertyName1=propertyValue2
-	 * @param conditionName ���������
-	 * @param conditionValue �������ֵ
-	 * @param propertyName �޸Ľ��������
-	 * @param propertyValue �޸Ľ������ֵ
+	 * @param conditionName 锟斤拷锟斤拷锟斤拷锟斤拷锟�
+	 * @param conditionValue 锟斤拷锟斤拷锟斤拷锟街�
+	 * @param propertyName 锟睫改斤拷锟斤拷锟斤拷锟斤拷锟�
+	 * @param propertyValue 锟睫改斤拷锟斤拷锟斤拷锟街�
 	 * @throws: TODO
 	 */
 	public void updateByProperties(String[] conditionName, Object[] conditionValue, String[] propertyName, Object[] propertyValue);
@@ -90,10 +90,10 @@ public interface BaseDao<E> {
 	 * @Title: updateByProperties
 	 * @Description: TODO
 	 * @Simple  update T set conditionName1=conditionValue1 where 1=1 and propertyName1=propertyValue2
-	 * @param conditionName ���������  conditionName where clause condiction property name
-	 * @param conditionValue �������ֵ  conditionValue where clause condiction property value
-	 * @param propertyName �޸Ľ��������  propertyName update clause property name array
-	 * @param propertyValue �޸Ľ������ֵ  propertyValue update clase property value array
+	 * @param conditionName 锟斤拷锟斤拷锟斤拷锟斤拷锟� conditionName where clause condiction property name
+	 * @param conditionValue 锟斤拷锟斤拷锟斤拷锟街� conditionValue where clause condiction property value
+	 * @param propertyName 锟睫改斤拷锟斤拷锟斤拷锟斤拷锟� propertyName update clause property name array
+	 * @param propertyValue 锟睫改斤拷锟斤拷锟斤拷锟街� propertyValue update clase property value array
 	 * @throws: TODO
 	 */
 	public void updateByProperties(String[] conditionName, Object[] conditionValue, String propertyName, Object propertyValue);
@@ -102,10 +102,10 @@ public interface BaseDao<E> {
 	 * @Title: updateByProperties
 	 * @Description: TODO
 	 * @Simple  update T set conditionName1=conditionValue1 where 1=1 and propertyName1=propertyValue2
-	 * @param conditionName ���������  conditionName where clause condiction property name
-	 * @param conditionValue �������ֵ  conditionValue where clause condiction property value
-	 * @param propertyName �޸Ľ��������  propertyName update clause property name array
-	 * @param propertyValue �޸Ľ������ֵ  propertyValue update clase property value array
+	 * @param conditionName 锟斤拷锟斤拷锟斤拷锟斤拷锟� conditionName where clause condiction property name
+	 * @param conditionValue 锟斤拷锟斤拷锟斤拷锟街� conditionValue where clause condiction property value
+	 * @param propertyName 锟睫改斤拷锟斤拷锟斤拷锟斤拷锟� propertyName update clause property name array
+	 * @param propertyValue 锟睫改斤拷锟斤拷锟斤拷锟街� propertyValue update clase property value array
 	 * @throws: TODO
 	 */
 	public void updateByProperties(String conditionName, Object conditionValue, String[] propertyName, Object[] propertyValue);
@@ -114,10 +114,10 @@ public interface BaseDao<E> {
 	 * @Title: updateByProperties
 	 * @Description: TODO
 	 * @Simple  update T set conditionName1=conditionValue1 where 1=1 and propertyName1=propertyValue2
-	 * @param conditionName ���������  conditionName where clause condiction property name
-	 * @param conditionValue �������ֵ  conditionValue where clause condiction property value
-	 * @param propertyName �޸Ľ��������  propertyName update clause property name array
-	 * @param propertyValue �޸Ľ������ֵ  propertyValue update clase property value array
+	 * @param conditionName 锟斤拷锟斤拷锟斤拷锟斤拷锟� conditionName where clause condiction property name
+	 * @param conditionValue 锟斤拷锟斤拷锟斤拷锟街� conditionValue where clause condiction property value
+	 * @param propertyName 锟睫改斤拷锟斤拷锟斤拷锟斤拷锟� propertyName update clause property name array
+	 * @param propertyValue 锟睫改斤拷锟斤拷锟斤拷锟街� propertyValue update clase property value array
 	 * @throws: TODO
 	 */
 	public void updateByProperties(String conditionName, Object conditionValue, String propertyName, Object propertyValue);
@@ -125,180 +125,180 @@ public interface BaseDao<E> {
 	
 	/**
 	 * @Title: update
-	 * @Description: ���oldPKִ��ɾ��֮��,����һ������
-	 * @param entity �����޸ĵĶ���
-	 * @param oldPK ��Ҫɾ��Ķ��������ʶ
+	 * @Description: 锟斤拷锟給ldPK执锟斤拷删锟斤拷之锟斤拷,锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷
+	 * @param entity 锟斤拷锟斤拷锟睫改的讹拷锟斤拷
+	 * @param oldPK 锟斤拷要删锟斤拷亩锟斤拷锟斤拷锟斤拷锟斤拷识
 	 * @throws: TODO
 	 */
-	public void update(E entity, Serializable oldPK);
+	public void update(T entity, Serializable oldPK);
 
 	/**
 	 * @Title: merge
-	 * @Description: ���ʵ���״̬�ϲ�����ǰ�־û�������
+	 * @Description: 锟斤拷锟绞碉拷锟斤拷状态锟较诧拷锟斤拷锟斤拷前锟街久伙拷锟斤拷锟斤拷锟斤拷
 	 * @param entity
 	 * @return
 	 * @throws: TODO
 	 */
-	public E merge(E entity);
+	public T merge(T entity);
 
 	/**
-	 * @Title: get��ʽ���ض���
-	 * @Description: hibernate��ȷ��һ�¸�id��Ӧ������Ƿ����,������session�����в���,
-	 * 			Ȼ���ڶ��������в���,��û�оͲ�ѯ��ݿ⣬��ݿ���û�оͷ���null.
-	 * 			-��֧��LAZY
+	 * @Title: get锟斤拷式锟斤拷锟截讹拷锟斤拷
+	 * @Description: hibernate锟斤拷确锟斤拷一锟铰革拷id锟斤拷应锟斤拷锟斤拷锟斤拷欠锟斤拷锟斤拷,锟斤拷锟斤拷锟斤拷session锟斤拷锟斤拷锟叫诧拷锟斤拷,
+	 * 			然锟斤拷锟节讹拷锟斤拷锟斤拷锟斤拷锟叫诧拷锟斤拷,锟斤拷没锟叫就诧拷询锟斤拷菘猓拷锟捷匡拷锟斤拷没锟叫就凤拷锟斤拷null.
+	 * 			-锟斤拷支锟斤拷LAZY
 	 * @param id
 	 * @return
 	 * @throws: null
 	 */
-	public E get(Serializable id);
+	public T get(Serializable id);
 
 	/**
 	 * @Title: load
-	 * @Description: ���ӳ���ļ����༶���lazy���Ե�����(Ĭ��Ϊtrue)
-	 * 			��Ϊtrue,��������Session�����в��ң�������id��Ӧ�Ķ��� �Ƿ� ����,
-	 * 			��������ʹ���ӳټ��أ�����ʵ��Ĵ��������(�ô�����Ϊʵ��������࣬��CGLIB��̬���)
-	 * 			�ȵ�����ʹ�øö���(���ȡOID����)��ʱ�� �ٲ�ѯ�����������ݿ�.����û�����׳��쳣
-	 * 			load�����ɷ���û�м���ʵ����ݵĴ�����ʵ��
-	 * 			֧��LAZY
-	 * @param id �����л���id
+	 * @Description: 锟斤拷锟接筹拷锟斤拷募锟斤拷锟斤拷嗉讹拷锟斤拷lazy锟斤拷锟皆碉拷锟斤拷锟斤拷(默锟斤拷为true)
+	 * 			锟斤拷为true,锟斤拷锟斤拷锟斤拷锟斤拷Session锟斤拷锟斤拷锟叫诧拷锟揭ｏ拷锟斤拷锟斤拷锟斤拷id锟斤拷应锟侥讹拷锟斤拷 锟角凤拷 锟斤拷锟斤拷,
+	 * 			锟斤拷锟斤拷锟斤拷锟斤拷使锟斤拷锟接迟硷拷锟截ｏ拷锟斤拷锟斤拷实锟斤拷拇锟斤拷锟斤拷锟斤拷锟斤拷(锟矫达拷锟斤拷锟斤拷为实锟斤拷锟斤拷锟斤拷锟斤拷啵拷锟紺GLIB锟斤拷态锟斤拷锟�
+	 * 			锟饺碉拷锟斤拷锟斤拷使锟矫该讹拷锟斤拷(锟斤拷锟饺ID锟斤拷锟斤拷)锟斤拷时锟斤拷 锟劫诧拷询锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟捷匡拷.锟斤拷锟斤拷没锟斤拷锟斤拷锟阶筹拷锟届常
+	 * 			load锟斤拷锟斤拷锟缴凤拷锟斤拷没锟叫硷拷锟斤拷实锟斤拷锟斤拷莸拇锟斤拷锟斤拷锟绞碉拷锟�
+	 * 			支锟斤拷LAZY
+	 * @param id 锟斤拷锟斤拷锟叫伙拷锟斤拷id
 	 * @return
 	 * @throws: ObjectNotFoundException
 	 */
-	public E load(Serializable id);
+	public T load(Serializable id);
 
 	/**
 	 * @Title: getByProerties
-	 * @Description: ͨ������������ȡһ������
-	 * @param propName ����������
-	 * @param propValue	��������ֵ
+	 * @Description: 通锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷取一锟斤拷锟斤拷锟斤拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue	锟斤拷锟斤拷锟斤拷锟斤拷值
 	 * @return
 	 * @throws: TODO
 	 */
-	public E getByProerties(String[] propName, Object[] propValue);
+	public T getByProerties(String[] propName, Object[] propValue);
 	
 	/**
 	 * @Title: getByProerties
-	 * @Description: ͨ������������ȡһ������
-	 * @param propName ����������
-	 * @param propValue	��������ֵ
-	 * @param sortedCondition ��������.��Ϊ�����ֶ�,ֵΪ������(desc or asc)
+	 * @Description: 通锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷取一锟斤拷锟斤拷锟斤拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue	锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition 锟斤拷锟斤拷锟斤拷锟斤拷.锟斤拷为锟斤拷锟斤拷锟街讹拷,值为锟斤拷锟斤拷锟斤拷(desc or asc)
 	 * @return
 	 * @throws: TODO
 	 */
-	public E getByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition);
+	public T getByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition);
 
 	/**
 	 * @Title: getByProerties
-	 * @Description: ͨ������������ȡһ������
-	 * @param propName ����������
-	 * @param propValue	��������ֵ
+	 * @Description: 通锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷取一锟斤拷锟斤拷锟斤拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue	锟斤拷锟斤拷锟斤拷锟斤拷值
 	 * @return
 	 * @throws: TODO
 	 */
-	public E getByProerties(String propName, Object propValue);
+	public T getByProerties(String propName, Object propValue);
 	
 	/**
 	 * @Title: getByProerties
-	 * @Description: ͨ������������ȡһ������
-	 * @param propName ����������
-	 * @param propValue	��������ֵ
-	 * @param sortedCondition ��������.��Ϊ�����ֶ�,ֵΪ������(desc or asc)
+	 * @Description: 通锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷取一锟斤拷锟斤拷锟斤拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue	锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition 锟斤拷锟斤拷锟斤拷锟斤拷.锟斤拷为锟斤拷锟斤拷锟街讹拷,值为锟斤拷锟斤拷锟斤拷(desc or asc)
 	 * @return
 	 * @throws: TODO
 	 */
-	public E getByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
+	public T getByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
 
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param sortedCondition Map �������������
-	 * @param top �ӵ�1�����ȡ����
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition Map 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
+	 * @param top 锟接碉拷1锟斤拷锟斤拷锟饺★拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition, Integer top);
+	public List<T> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition, Integer top);
 	
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param sortedCondition Map �������������
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition Map 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition);
+	public List<T> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition);
 	
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param top �ӵ�1�����ȡ����
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param top 锟接碉拷1锟斤拷锟斤拷锟饺★拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Integer top);
+	public List<T> queryByProerties(String[] propName, Object[] propValue, Integer top);
 
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String[] propName, Object[] propValue);
+	public List<T> queryByProerties(String[] propName, Object[] propValue);
 	
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param sortedCondition Map �������������
-	 * @param top �ӵ�1�����ȡ����
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition Map 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
+	 * @param top 锟接碉拷1锟斤拷锟斤拷锟饺★拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition, Integer top);
+	public List<T> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition, Integer top);
 
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param sortedCondition Map �������������
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param sortedCondition Map 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
+	public List<T> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition);
 	
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
-	 * @param top �ӵ�1�����ȡ����
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
+	 * @param top 锟接碉拷1锟斤拷锟斤拷锟饺★拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String propName, Object propValue, Integer top);
+	public List<T> queryByProerties(String propName, Object propValue, Integer top);
 
 	/**
 	 * @Title: queryByProerties
-	 * @Description: ����������������ѯһ�����󼯺�
-	 * @param propName ����������
-	 * @param propValue ��������ֵ
+	 * @Description: 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷询一锟斤拷锟斤拷锟襟集猴拷
+	 * @param propName 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param propValue 锟斤拷锟斤拷锟斤拷锟斤拷值
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> queryByProerties(String propName, Object propValue);
+	public List<T> queryByProerties(String propName, Object propValue);
 
 	/**
 	 * @Title: clear
-	 * @Description: ���session����
+	 * @Description: 锟斤拷锟絪ession锟斤拷锟斤拷
 	 * @throws: TODO
 	 */
 	public void clear();
@@ -306,16 +306,16 @@ public interface BaseDao<E> {
 	/**
 	 * @Title: evict
 	 * @Description: Remove this instance from the session cache
-	 * 			�������session���������session��EntityEntries��������� 
-	 * 			��ϸ�ο�:http://langhua9527.iteye.com/blog/343311
+	 * 			锟斤拷锟斤拷锟斤拷锟絪ession锟斤拷锟斤拷锟斤拷锟斤拷锟絪ession锟斤拷EntityEntries锟斤拷锟斤拷锟斤拷锟斤拷锟�
+	 * 			锟斤拷细锟轿匡拷:http://langhua9527.iteye.com/blog/343311
 	 * @param entity
 	 * @throws: TODO
 	 */
-	public void evict(E entity);
+	public void evict(T entity);
 
 	/**
 	 * @Title: countAll
-	 * @Description: ͳ�����зǶ����ظ�����(�ظ����ݶ���equals��)
+	 * @Description: 统锟斤拷锟斤拷锟叫非讹拷锟斤拷锟截革拷锟斤拷锟斤拷(锟截革拷锟斤拷锟捷讹拷锟斤拷equals锟斤拷)
 	 * @return
 	 * @throws: TODO
 	 */
@@ -323,34 +323,34 @@ public interface BaseDao<E> {
 
 	/**
 	 * @Title: doQueryAll
-	 * @Description: Criteria��ʽ��ѯ����
+	 * @Description: Criteria锟斤拷式锟斤拷询锟斤拷锟斤拷
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> doQueryAll();
+	public List<T> doQueryAll();
 	
 	/**
 	 * @Title: doQueryAll
-	 * @Description: Criteria��ʽ��ѯ
-	 * @param sortedCondition ��������
-	 * @param top �ӵ�һ����ʼ���top�����
+	 * @Description: Criteria锟斤拷式锟斤拷询
+	 * @param sortedCondition 锟斤拷锟斤拷锟斤拷锟斤拷
+	 * @param top 锟接碉拷一锟斤拷锟斤拷始锟斤拷锟絫op锟斤拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> doQueryAll(Map<String, String> sortedCondition, Integer top);
+	public List<T> doQueryAll(Map<String, String> sortedCondition, Integer top);
 	
 	/**
 	 * @Title: doQueryAll
-	 * @Description: Criteria��ʽ��ѯĬ������
-	 * @param top �ӵ�һ����ʼ���top�����
+	 * @Description: Criteria锟斤拷式锟斤拷询默锟斤拷锟斤拷锟斤拷
+	 * @param top 锟接碉拷一锟斤拷锟斤拷始锟斤拷锟絫op锟斤拷锟斤拷锟�
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> doQueryAll(Integer top);
+	public List<T> doQueryAll(Integer top);
 	
 	/**
 	 * @Title: doCount
-	 * @Description: criteria��ѯ��������Ķ������
+	 * @Description: criteria锟斤拷询锟斤拷锟斤拷锟斤拷锟斤拷亩锟斤拷锟斤拷锟斤拷
 	 * @param parameter
 	 * @return
 	 * @throws: TODO
@@ -359,32 +359,32 @@ public interface BaseDao<E> {
 	
 	/**
 	 * @Title: doQuery
-	 * @Description: criteria��ѯ��������Ķ��󼯺�
+	 * @Description: criteria锟斤拷询锟斤拷锟斤拷锟斤拷锟斤拷亩锟斤拷蠹锟�
 	 * @param parameter
 	 * @return
 	 * @throws: TODO
 	 */
-	public List<E> doQuery(BaseParameter parameter);
+	public List<T> doQuery(BaseParameter parameter);
 	
 	/**
 	 * @Title: doPaginationQuery
-	 * @Description: criteria��ҳ��ѯ��������Ķ��󼯺�.
-	 * 				����װΪQueryResult<E>
+	 * @Description: criteria锟斤拷页锟斤拷询锟斤拷锟斤拷锟斤拷锟斤拷亩锟斤拷蠹锟�
+	 * 				锟斤拷锟斤拷装为QueryResult<E>
 	 * @param parameter
 	 * @return
 	 * @throws: TODO
 	 */
-	public QueryResult<E> doPaginationQuery(BaseParameter parameter);
+	public QueryResult<T> doPaginationQuery(BaseParameter parameter);
 	
 	/**
 	 * @Title: doPaginationQuery
-	 * @Description: criteria��ҳ��ѯ��������Ķ��󼯺�.
-	 * 				����װΪQueryResult<E>
+	 * @Description: criteria锟斤拷页锟斤拷询锟斤拷锟斤拷锟斤拷锟斤拷亩锟斤拷蠹锟�
+	 * 				锟斤拷锟斤拷装为QueryResult<E>
 	 * @param parameter
-	 * @param bool ��δ���׺��ֺ���???????????
+	 * @param bool 锟斤拷未锟斤拷锟阶猴拷锟街猴拷锟斤拷???????????
 	 * @return
 	 * @throws: TODO
 	 */
-	public QueryResult<E> doPaginationQuery(BaseParameter parameter, boolean bool);
+	public QueryResult<T> doPaginationQuery(BaseParameter parameter, boolean bool);
 
 }

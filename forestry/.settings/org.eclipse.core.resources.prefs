@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
-encoding//src/community/base/dao/BaseDao.java=GBK
+encoding//src/community/base/dao=GBK
+encoding//src/community/base/dao/BaseDao.java=UTF-8
 encoding/<project>=UTF-8

@@ -1,7 +1,11 @@
-package community.base.dao;
+package community.isecrity.dao.base;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,61 +18,236 @@ import javax.annotation.Resource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.util.Assert;
+import org.hibernate.jdbc.Work;
+import org.springframework.util.ReflectionUtils;
 
-import core.support.BaseParameter;
-import core.support.QueryResult;
+import community.isecrity.dao.base.support.BaseParameter;
+import community.isecrity.dao.base.support.QueryResult;
 
-public class BaseDaoImpl<E> implements BaseDao<E> {
 
-	protected final Logger log = Logger.getLogger(BaseDaoImpl.class);
-
+public class BaseDaoImpl_Hibernate<T> implements BaseDao_Hibernate<T>{
 	private static Map<String, Method> MAP_METHOD = new HashMap<String, Method>();
 
 	private SessionFactory sessionFactory;
-
+	protected Class<T> entityClass;
+	
+	//***************************************************
+	//以下为get/set
+	//***************************************************
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-
+	//手动注入
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
 	public Session getSession() {
 		return sessionFactory.getCurrentSession();
-	}
-
+	}	
+	//采用spring注入,非spring框架取消该注解
 	@Resource(name = "sessionFactory")
 	public void setSF(SessionFactory sessionFactory) {
 		setSessionFactory(sessionFactory);
 	}
-
-	protected Class<E> entityClass;
-
-	public BaseDaoImpl(Class<E> entityClass) {
+	
+	public void setEntityClass(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}
-
-	public void persist(E entity) {
-		getSession().save(entity);
+	//***************************************************
+	//以下构造函数
+	//***************************************************
+	public BaseDaoImpl_Hibernate() {
+		super();
+	}
+	public BaseDaoImpl_Hibernate(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+	
+	//***************************************************
+	//以下为继承baseDao的实现
+	//***************************************************
+	@Override
+	public void add(T obj) {
+		getSession().save(obj);
+	}
+	
+	//需要主键建立生成策略非手动主键,需要主键属性名称,该主键属性名称暂定为id,后续通过参数或者对象内部属性实现自由变化
+	//引入了spring的工具类包 org.springframework.util.ReflectionUtils
+	@Override
+	public int addBackId(T obj) {
+		getSession().save(obj);
+		return (int) ReflectionUtils.getField(ReflectionUtils.findField(obj.getClass(), "id"), obj);
+	}
+	
+	//需要配置hibernate.jdbc.batch_size参数,建议30-50之间
+	@Override
+	public void addBatch(List<T> list){
+		Transaction tx=getSession().beginTransaction();
+		for(int i=0;i<list.size();i++){
+			getSession().save(list.get(i));
+			// 以每50个数据作为一个处理单元
+			if(i%50==0){
+				getSession().flush(); //将Hibernate缓存中的数据提交到数据库,保持与数据库数据的同步
+				this.clear(); // 清除内部缓存的全部数据，及时释放出占用的内存
+			}
+		}
+		tx.commit();
+	}	
+	
+	//通过hibernate获取jdbc连接方式执行批量插入,则此处事务所有独立控制,暂未完成语句转化
+	@Override
+	public void addBatchJdbc(List<T> list) {
+		Transaction tx=getSession().beginTransaction();
+		//定义一个匿名类，实现了Work接口,hibernate3.2以后废弃了Session.connection()方法改用内部类实现
+		Work work=new Work(){
+			public void execute(Connection connection) throws SQLException{
+				//通过JDBC API执行用于批量更新的SQL语句
+				PreparedStatement stmt=connection.prepareStatement("inseter into "+entityClass.getName()+" values ()");
+		
+				stmt.executeUpdate();
+			}
+		};
+		//执行work
+		getSession().doWork(work);
+		tx.commit();
+	}
+	
+	//根据主键删除Integer/String/Long/int/long
+	@Override
+	public void delete(Object obj) {
+		if(obj instanceof java.lang.Integer || obj.getClass().getSimpleName().equals("int"))
+			this.deleteByPK((Integer) obj);
+		else if(obj instanceof java.lang.String)
+			this.deleteByPK((String) obj);
+		else if(obj instanceof java.lang.Long || obj.getClass().getSimpleName().equals("long"))
+			this.deleteByPK((Long) obj);
 	}
 
+	@Override
+	public void deleteByT(T t) {
+		Field[] fields = t.getClass().getDeclaredFields();//根据Class对象获得属性 私有的也可以获得
+		List<String> propNames=null;
+		List<Object> propValues=null;
+		
+		for (int i = 0; i < fields.length; i++) {
+			try {
+				fields[i].setAccessible(true);
+				if(fields[i].get(t)!=null){
+					propNames.add(fields[i].getName());
+					propValues.add(fields[i].get(t));				
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		this.deleteByProperties((String[])propNames.toArray(new String[propNames.size()]), propValues.toArray());
+	}
+
+	@Override
+	public void update(T t) {
+		getSession().update(t);
+	}
+
+	@Override
+	public void updateBatch(List<T> list) {
+		Transaction tx=getSession().beginTransaction();
+		for(int i=0;i<list.size();i++){
+			getSession().update(list.get(i));
+			// 以每50个数据作为一个处理单元
+			if(i%50==0){
+				getSession().flush(); //将Hibernate缓存中的数据提交到数据库,保持与数据库数据的同步
+				this.clear(); // 清除内部缓存的全部数据，及时释放出占用的内存
+			}
+		}
+		tx.commit();
+	}
+
+	@Override
+	public T load(Object obj) {
+		if(obj instanceof java.lang.Integer || obj.getClass().getSimpleName().equals("int"))
+			return this.load((Integer) obj);
+		else if(obj instanceof java.lang.String)
+			return this.load((String) obj);
+		else if(obj instanceof java.lang.Long || obj.getClass().getSimpleName().equals("long"))
+			return this.load((Long) obj);
+		return null;
+	}
+
+	@Override
+	public T getBean(T t) {
+		Field[] fields = t.getClass().getDeclaredFields();//根据Class对象获得属性 私有的也可以获得
+		List<String> propNames=null;
+		List<Object> propValues=null;
+		
+		for (int i = 0; i < fields.length; i++) {
+			try {
+				fields[i].setAccessible(true);
+				if(fields[i].get(t)!=null){
+					propNames.add(fields[i].getName());
+					propValues.add(fields[i].get(t));				
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return this.getByProerties((String[])propNames.toArray(new String[propNames.size()]), propValues.toArray());
+	}
+
+	@Override
+	public List<T> getBeanList(T t) {
+		Field[] fields = t.getClass().getDeclaredFields();//根据Class对象获得属性 私有的也可以获得
+		List<String> propNames=null;
+		List<Object> propValues=null;
+		
+		for (int i = 0; i < fields.length; i++) {
+			try {
+				fields[i].setAccessible(true);
+				if(fields[i].get(t)!=null){
+					propNames.add(fields[i].getName());
+					propValues.add(fields[i].get(t));				
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return this.queryByProerties((String[])propNames.toArray(new String[propNames.size()]), propValues.toArray());
+	}
+
+	@Override
+	public Object getT4Page(Object obj, T t) {
+		return doPaginationQuery((BaseParameter)obj);
+	}
+
+	@Override
+	public long getTNums(T t) {
+		return doCount((BaseParameter)t);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public T merge(T t) {
+		return (T) getSession().merge(t);
+	}
+
+	@Override
 	public boolean deleteByPK(Serializable... id) {
 		boolean result = false;
 		if (id != null && id.length > 0) {
 			for (int i = 0; i < id.length; i++) {
-				E entity = get(id[i]);
+				T entity = get(id[i]);
 				if (entity != null) {
 					getSession().delete(entity);
 					result = true;
@@ -78,6 +257,12 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return result;
 	}
 
+	@Override
+	public void deleteByProperties(String propName, Object propValue) {
+		deleteByProperties(new String[] { propName }, new Object[] { propValue });
+	}
+
+	@Override
 	public void deleteByProperties(String[] propName, Object[] propValue) {
 		if (propName != null && propName.length > 0 && propValue != null && propValue.length > 0 && propValue.length == propName.length) {
 			StringBuffer sb = new StringBuffer("delete from " + entityClass.getName() + " o where 1=1 ");
@@ -88,14 +273,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		}
 	}
 
-	public void delete(E entity) {
-		getSession().delete(entity);
-	}
-
-	public void deleteByProperties(String propName, Object propValue) {
-		deleteByProperties(new String[] { propName }, new Object[] { propValue });
-	}
-
+	@Override
 	public void updateByProperties(String[] conditionName, Object[] conditionValue, String[] propertyName, Object[] propertyValue) {
 		if (propertyName != null && propertyName.length > 0 && propertyValue != null && propertyValue.length > 0 && propertyName.length == propertyValue.length && conditionValue != null && conditionValue.length > 0) {
 			StringBuffer sb = new StringBuffer();
@@ -118,32 +296,45 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		}
 	}
 
+	@Override
 	public void updateByProperties(String[] conditionName, Object[] conditionValue, String propertyName, Object propertyValue) {
 		updateByProperties(conditionName, conditionValue, new String[] { propertyName }, new Object[] { propertyValue });
 	}
 
+	@Override
 	public void updateByProperties(String conditionName, Object conditionValue, String[] propertyName, Object[] propertyValue) {
 		updateByProperties(new String[] { conditionName }, new Object[] { conditionValue }, propertyName, propertyValue);
 	}
 
+	@Override
 	public void updateByProperties(String conditionName, Object conditionValue, String propertyName, Object propertyValue) {
 		updateByProperties(new String[] { conditionName }, new Object[] { conditionValue }, new String[] { propertyName }, new Object[] { propertyValue });
 	}
-
-	public void update(E entity) {
-		getSession().update(entity);
+	
+	//先删除再保存
+	@Override
+	public void update(T entity, Serializable oldPK) {
+		deleteByPK(oldPK);
+		getSession().save(entity);
 	}
 
-	public void update(E entity, Serializable oldId) {
-		deleteByPK(oldId);
-		persist(entity);
+	@Override
+	public T get(Serializable id) {
+		return (T) getSession().get(entityClass, id);
 	}
 
-	public E merge(E entity) {
-		return (E) getSession().merge(entity);
+	@Override
+	public T load(Serializable id) {
+		return (T) getSession().load(entityClass, id);
 	}
 
-	public E getByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition) {
+	@Override
+	public T getByProerties(String[] propName, Object[] propValue) {
+		return getByProerties(propName, propValue, null);
+	}
+
+	@Override
+	public T getByProerties(String[] propName, Object[] propValue,Map<String, String> sortedCondition) {
 		if (propName != null && propName.length > 0 && propValue != null && propValue.length > 0 && propValue.length == propName.length) {
 			StringBuffer sb = new StringBuffer("select o from " + entityClass.getName() + " o where 1=1 ");
 			appendQL(sb, propName, propValue);
@@ -156,34 +347,25 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 			}
 			Query query = getSession().createQuery(sb.toString());
 			setParameter(query, propName, propValue);
-			List<E> list = query.list();
+			List<T> list = query.list();
 			if (list != null && list.size() > 0)
 				return list.get(0);
 		}
 		return null;
 	}
 
-	public E get(Serializable id) {
-		return (E) getSession().get(entityClass, id);
-	}
-
-	public E load(Serializable id) {
-		return (E) getSession().load(entityClass, id);
-	}
-
-	public E getByProerties(String[] propName, Object[] propValue) {
-		return getByProerties(propName, propValue, null);
-	}
-
-	public E getByProerties(String propName, Object propValue) {
+	@Override
+	public T getByProerties(String propName, Object propValue) {
 		return getByProerties(new String[] { propName }, new Object[] { propValue });
 	}
 
-	public E getByProerties(String propName, Object propValue, Map<String, String> sortedCondition) {
+	@Override
+	public T getByProerties(String propName, Object propValue,Map<String, String> sortedCondition) {
 		return getByProerties(new String[] { propName }, new Object[] { propValue }, sortedCondition);
 	}
 
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition, Integer top) {
+	@Override
+	public List<T> queryByProerties(String[] propName, Object[] propValue,Map<String, String> sortedCondition, Integer top) {
 		if (propName != null && propValue != null && propValue.length == propName.length) {
 			StringBuffer sb = new StringBuffer("select o from " + entityClass.getName() + " o where 1=1 ");
 			appendQL(sb, propName, propValue);
@@ -205,47 +387,51 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return null;
 	}
 
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Integer top) {
+	public List<T> queryByProerties(String[] propName, Object[] propValue, Integer top) {
 		return queryByProerties(propName, propValue, null, top);
 	}
 
-	public List<E> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition) {
+	public List<T> queryByProerties(String[] propName, Object[] propValue, Map<String, String> sortedCondition) {
 		return queryByProerties(propName, propValue, sortedCondition, null);
 	}
 
-	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition, Integer top) {
+	public List<T> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition, Integer top) {
 		return queryByProerties(new String[] { propName }, new Object[] { propValue }, sortedCondition, top);
 	}
 
-	public List<E> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition) {
+	public List<T> queryByProerties(String propName, Object propValue, Map<String, String> sortedCondition) {
 		return queryByProerties(new String[] { propName }, new Object[] { propValue }, sortedCondition, null);
 	}
 
-	public List<E> queryByProerties(String propName, Object propValue, Integer top) {
+	public List<T> queryByProerties(String propName, Object propValue, Integer top) {
 		return queryByProerties(new String[] { propName }, new Object[] { propValue }, null, top);
 	}
 
-	public List<E> queryByProerties(String[] propName, Object[] propValue) {
+	public List<T> queryByProerties(String[] propName, Object[] propValue) {
 		return queryByProerties(propName, propValue, null, null);
 	}
 
-	public List<E> queryByProerties(String propName, Object propValue) {
+	public List<T> queryByProerties(String propName, Object propValue) {
 		return queryByProerties(new String[] { propName }, new Object[] { propValue }, null, null);
 	}
 
+	@Override
 	public void clear() {
 		getSession().clear();
 	}
 
-	public void evict(E entity) {
+	@Override
+	public void evict(T entity) {
 		getSession().evict(entity);
 	}
 
+	@Override
 	public Long countAll() {
 		return (Long) getSession().createQuery("select count(*) from " + entityClass.getName()).uniqueResult();
 	}
 
-	public List<E> doQueryAll(Map<String, String> sortedCondition, Integer top) {
+	@Override
+	public List<T> doQueryAll(Map<String, String> sortedCondition, Integer top) {
 		Criteria criteria = getSession().createCriteria(entityClass);
 		if (sortedCondition != null && sortedCondition.size() > 0) {
 			for (Iterator<String> it = sortedCondition.keySet().iterator(); it.hasNext();) {
@@ -264,14 +450,17 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return criteria.list();
 	}
 
-	public List<E> doQueryAll() {
+	@Override
+	public List<T> doQueryAll() {
 		return doQueryAll(null, null);
 	}
 
-	public List<E> doQueryAll(Integer top) {
+	@Override
+	public List<T> doQueryAll(Integer top) {
 		return doQueryAll(null, top);
 	}
 
+	@Override
 	public Long doCount(BaseParameter param) {
 		if (param == null)
 			return null;
@@ -286,7 +475,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return null;
 	}
 
-	public List<E> doQuery(BaseParameter param) {
+	public List<T> doQuery(BaseParameter param) {
 		if (param == null)
 			return null;
 		Criteria criteria = getSession().createCriteria(entityClass);
@@ -310,11 +499,11 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return null;
 	}
 
-	public QueryResult<E> doPaginationQuery(BaseParameter param) {
+	public QueryResult<T> doPaginationQuery(BaseParameter param) {
 		return doPaginationQuery(param, true);
 	}
 
-	public QueryResult<E> doPaginationQuery(BaseParameter param, boolean bool) {
+	public QueryResult<T> doPaginationQuery(BaseParameter param, boolean bool) {
 		if (param == null)
 			return null;
 		Criteria criteria = getSession().createCriteria(entityClass);
@@ -325,7 +514,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 			extendprocessQuery(criteria, param);
 
 		try {
-			QueryResult<E> qr = new QueryResult<E>();
+			QueryResult<T> qr = new QueryResult<T>();
 			criteria.setProjection(Projections.rowCount());
 			qr.setTotalCount(((Number) criteria.uniqueResult()).longValue());
 			if (qr.getTotalCount() > 0) {
@@ -345,7 +534,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 				criteria.setFirstResult(param.getFirstResult());
 				qr.setResultList(criteria.list());
 			} else {
-				qr.setResultList(new ArrayList<E>());
+				qr.setResultList(new ArrayList<T>());
 			}
 			return qr;
 		} catch (Exception e) {
@@ -354,79 +543,18 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		return null;
 	}
 
-	private void appendQL(StringBuffer sb, String[] propName, Object[] propValue) {
-		for (int i = 0; i < propName.length; i++) {
-			String name = propName[i];
-			Object value = propValue[i];
-			if (value instanceof Object[] || value instanceof Collection<?>) {
-				Object[] arraySerializable = (Object[]) value;
-				if (arraySerializable != null && arraySerializable.length > 0) {
-					sb.append(" and o." + name + " in (:" + name.replace(".", "") + ")");
-				}
-			} else {
-				if (value == null) {
-					sb.append(" and o." + name + " is null ");
-				} else {
-					sb.append(" and o." + name + "=:" + name.replace(".", ""));
-				}
-			}
-		}
+	
+	
+	
+	//***************************************************
+	//以下为辅助方法
+	//***************************************************
+	private String getOpt(String value) {
+		return (value.substring(0, value.indexOf('_', 1))).substring(1);
 	}
 
-	private void setParameter(Query query, String[] propName, Object[] propValue) {
-		for (int i = 0; i < propName.length; i++) {
-			String name = propName[i];
-			Object value = propValue[i];
-			if (value != null) {
-				if (value instanceof Object[]) {
-					query.setParameterList(name.replace(".", ""), (Object[]) value);
-				} else if (value instanceof Collection<?>) {
-					query.setParameterList(name.replace(".", ""), (Collection<?>) value);
-				} else {
-					query.setParameter(name.replace(".", ""), value);
-				}
-			}
-		}
-	}
-
-	protected void buildSorted(BaseParameter param, StringBuffer hql) {
-		if (param.getSortedConditions() != null && param.getSortedConditions().size() > 0) {
-			hql.append(" order by ");
-			Map<String, String> sorted = param.getSortedConditions();
-			for (Iterator<String> it = sorted.keySet().iterator(); it.hasNext();) {
-				String col = it.next();
-				hql.append(col + " " + sorted.get(col) + ",");
-			}
-			hql.deleteCharAt(hql.length() - 1);
-		}
-	}
-
-	private String transferColumn(String queryCondition) {
-		return queryCondition.substring(queryCondition.indexOf('_', 1) + 1);
-	}
-
-	protected void setParameter(Map<String, Object> mapParameter, Query query) {
-		for (Iterator<String> it = mapParameter.keySet().iterator(); it.hasNext();) {
-			String parameterName = (String) it.next();
-			Object value = mapParameter.get(parameterName);
-			query.setParameter(parameterName, value);
-		}
-	}
-
-	protected Map handlerConditions(BaseParameter param) throws Exception {
-		Map staticConditions = core.util.BeanUtils.describe(param);
-		Map<String, Object> dynamicConditions = param.getQueryDynamicConditions();
-		if (dynamicConditions.size() > 0) {
-			for (Iterator it = staticConditions.keySet().iterator(); it.hasNext();) {
-				String key = (String) it.next();
-				Object value = staticConditions.get(key);
-				if (key.startsWith("$") && value != null && !"".equals(value)) {
-					dynamicConditions.put(key, value);
-				}
-			}
-			staticConditions = dynamicConditions;
-		}
-		return staticConditions;
+	private String getPropName(String value) {
+		return value.substring(value.indexOf('_', 1) + 1);
 	}
 
 	/** ************ for QBC ********** */
@@ -452,7 +580,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		}
 		return MAP_METHOD.get(name);
 	}
-
+	
 	private Method getExtendMethod(String name) {
 		if (!MAP_METHOD.containsKey(name)) {
 			Class<Restrictions> clazz = Restrictions.class;
@@ -478,15 +606,43 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 		}
 		return MAP_METHOD.get(name);
 	}
-
-	private String getOpt(String value) {
-		return (value.substring(0, value.indexOf('_', 1))).substring(1);
+	
+	
+	private void appendQL(StringBuffer sb, String[] propName, Object[] propValue) {
+		for (int i = 0; i < propName.length; i++) {
+			String name = propName[i];
+			Object value = propValue[i];
+			if (value instanceof Object[] || value instanceof Collection<?>) {
+				Object[] arraySerializable = (Object[]) value;
+				if (arraySerializable != null && arraySerializable.length > 0) {
+					sb.append(" and o." + name + " in (:" + name.replace(".", "") + ")");
+				}
+			} else {
+				if (value == null) {
+					sb.append(" and o." + name + " is null ");
+				} else {
+					sb.append(" and o." + name + "=:" + name.replace(".", ""));
+				}
+			}
+		}
 	}
-
-	private String getPropName(String value) {
-		return value.substring(value.indexOf('_', 1) + 1);
+	
+	private void setParameter(Query query, String[] propName, Object[] propValue) {
+		for (int i = 0; i < propName.length; i++) {
+			String name = propName[i];
+			Object value = propValue[i];
+			if (value != null) {
+				if (value instanceof Object[]) {
+					query.setParameterList(name.replace(".", ""), (Object[]) value);
+				} else if (value instanceof Collection<?>) {
+					query.setParameterList(name.replace(".", ""), (Collection<?>) value);
+				} else {
+					query.setParameter(name.replace(".", ""), value);
+				}
+			}
+		}
 	}
-
+	
 	private void processQuery(Criteria criteria, BaseParameter param) {
 		try {
 			Map<String, Object> staticConditionMap = core.util.BeanUtils.describeAvailableParameter(param);
@@ -545,7 +701,7 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void extendprocessQuery(Criteria criteria, BaseParameter param) {
 		try {
 			Map<String, Object> staticConditionMap = core.util.BeanUtils.describeAvailableParameter(param);
@@ -611,5 +767,4 @@ public class BaseDaoImpl<E> implements BaseDao<E> {
 			e.printStackTrace();
 		}
 	}
-
 }

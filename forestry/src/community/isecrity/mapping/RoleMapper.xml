@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hadoop.secrity.mapping.RoleMapper" >
+  <resultMap id="RoleMap" type="com.hadoop.secrity.entity.Role" >
+    <id column="r_id" property="id" jdbcType="INTEGER" />
+    <result column="r_name" property="name" jdbcType="VARCHAR" />
+    <result column="r_addtime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="r_edittime" property="editime" jdbcType="TIMESTAMP" />
+    <result column="r_remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="RolePrivMap" type="com.hadoop.secrity.entity.Role" extends="RoleMap">
+  	<collection property="plist" ofType="com.hadoop.secrity.entity.Privilege">
+		<id column="p_id" property="id" jdbcType="INTEGER" />
+	    <result column="p_name" property="name" jdbcType="VARCHAR" />
+	    <result column="p_desc" property="desc" jdbcType="INTEGER" />
+	    <result column="t_m_id" property="mid" jdbcType="INTEGER" />
+	    <result column="p_style" property="style" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  
+  <sql id="Base_Column_Role" >
+    r_id, r_name, r_addtime, r_edittime, r_remark
+  </sql>
+  <sql id="Base_Column_Priv" >
+    p_id, p_name, p_desc, t_m_id, p_style
+  </sql>
+ 
+  <!-- 添加一个角色信息 -->
+  <insert id="addRole" parameterType="com.hadoop.secrity.entity.Role" useGeneratedKeys="true" keyColumn="r_id" keyProperty="id">
+  	insert t_role (r_id, r_name, r_addtime, r_edittime, r_remark)
+  	values
+  	(#{id},#{name},#{addtime},#{editime},#{remark})
+  </insert>
+  
+  <!-- 添加一个权限与角色的关系  -->
+  <insert id="addRolePrivRelation" parameterType="com.hadoop.secrity.entity.RolePrivilegeLink" >
+    insert into t_role_priv
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="role.id != null" >
+        t_r_id,
+      </if>
+      <if test="privilege.id != null" >
+        t_p_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="role.id != null" >
+        #{role.id,jdbcType=INTEGER},
+      </if>
+      <if test="privilege.id != null" >
+         #{privilege.id,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入权限与角色的关联关系 -->
+  <insert id="addRolePrivsRelation" parameterType="java.util.List">
+  	insert into t_role_priv (t_r_id,t_p_id)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+    	(#{item.role.id,jdbcType=INTEGER},
+    	#{item.privilege.id,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+  
+    <!-- 修改角色对象的基本信息.不含关联操作 -->
+  <update id="updateRole">
+  	update t_role
+  	<set>
+  		<if test="name != null">
+  			r_name = #{name},
+  		</if>
+  		<if test="addtime != null">
+  			r_addtime = #{addtime},
+  		</if>
+  		<if test="editime != null">
+  			r_edittime = #{editime},
+  		</if>
+  		<if test="remark != null">
+  			r_remark = #{remark}	
+  		</if>
+  	</set>
+  	where r_id = #{id}
+  </update>
+  
+  <!-- 根据id删除Role  -->
+  <delete id="delRoleById" parameterType="Integer">
+  	delete from t_role where r_id = #{id} 
+  </delete>
+  
+  
+  <!-- 根据RolePrivilegeLink批量删除该role与权限之间的关联关系 -->
+  <delete id="delRolePrivsBatch">
+  	delete from t_role_priv where 1=1
+  	<if test="pIdArray == null or pIdArray.length == 0">
+  		and 1=2
+  	</if>
+  	<if test="pIdArray != null and pIdArray.length != 0">
+  		and t_r_id = #{rId}
+  		and t_p_id in
+  		<foreach collection="pIdArray" item="pId" index="index" open="(" close=")" separator=",">
+  			#{pId}
+  		</foreach>
+  	</if>
+  </delete>
+
+  <!-- 根据role对象的id批量删除该role与权限之间的关联  lazite-->
+  <delete id="delRolePrivsByRoleId" parameterType="Integer">
+  	delete from t_role_priv where t_r_id = #{id}
+  </delete>
+  
+  <!-- 根据role对象的id批量删除该role与权限之间的关联关系及角色本身  lazite-->
+  <delete id="delRolePrivsOneStep" parameterType="Integer">
+  	delete from t_role_priv where t_r_id = #{id};
+  	delete from t_role where r_id=#{id}
+  </delete>
+  
+  
+    <!-- 根据主键load出Role对象,包含权限集合 -->
+  <select id="selectRolePrivsById" resultMap="RolePrivMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_Role" />
+     ,
+    <include refid="Base_Column_Priv" />
+    from t_role r
+    left join t_role_priv rp on r.r_id=rp.t_r_id 
+    left join t_privilege p on rp.t_p_id=p.p_id 
+    where r.r_id = #{id,jdbcType=INTEGER}
+  </select>
+
+
+  <!-- 根据id查找一个role对象 -->
+  <select id="selectRoleById" resultMap="RoleMap" parameterType="Integer">
+  	select 
+  	<include refid="Base_Column_Role"></include>
+    from t_role where r_id = #{id}
+  </select>
+  
+  <!-- 选择所有的角色并关联权限	 -->
+  <select id="selectRoleList" resultMap="RolePrivMap"> 
+  	select 
+    <include refid="Base_Column_Role" />
+     ,
+    <include refid="Base_Column_Priv" />
+    from t_role r left join t_role_priv rp 
+    on r.r_id=rp.t_r_id 
+    left join t_privilege p 
+    on rp.t_p_id=p.p_id
+  </select>
+</mapper>
