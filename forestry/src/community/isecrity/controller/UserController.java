@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+
+
+
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.Page;
-import com.hadoop.secrity.entity.Role;
-import com.hadoop.secrity.entity.User;
-import com.hadoop.secrity.entity.UserRoleLink;
-import com.hadoop.secrity.service.RoleService;
-import com.hadoop.secrity.service.SecrityService;
-import com.hadoop.secrity.service.UserService;
+
+import community.isecrity.entity.User;
+import community.isecrity.service.RoleService;
+import community.isecrity.service.SecrityService;
+import community.isecrity.service.UserService;
+
 
 @Controller
 @RequestMapping("/user")
