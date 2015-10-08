@@ -19,9 +19,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
-//    @Autowired
-//    private PasswordHelper passwordHelper;
-//    @Autowired
+    @Autowired
+    private PasswordHelper passwordHelper;
+    @Autowired
     private RoleService roleService;
 
     /**
@@ -29,10 +29,9 @@ public class UserServiceImpl implements UserService {
      * @param user
      */
     public User createUser(User user) {
-//        //加密密码
-//        passwordHelper.encryptPassword(user);
-//        return userDao.createUser(user);
-    	return null;
+        //加密密码
+        passwordHelper.encryptPassword(user);
+        return userDao.createUser(user);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(Long userId, String newPassword) {
         User user =userDao.findOne(userId);
         user.setPassword(newPassword);
-        //passwordHelper.encryptPassword(user);
+        passwordHelper.encryptPassword(user);
         userDao.updateUser(user);
     }
 
